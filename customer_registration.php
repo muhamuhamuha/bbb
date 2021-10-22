@@ -1,4 +1,4 @@
-<script>alert('Please enter all values')</script><!-- UI: Prithviraj Narahari, php code: Alexander Martens -->
+<!-- UI: Prithviraj Narahari, php code: Alexander Martens -->
 <head>
 <title> CUSTOMER REGISTRATION </title>
 </head>
@@ -116,3 +116,11 @@
 	</table>
 </body>
 </HTML>
+<?php
+
+require __DIR__ . '/src/utils.php';
+
+echo "<br>";
+print_r(join_paths(get_root_path(), 'hello', 'hi', ));
+
+?>
