@@ -20,12 +20,27 @@ function get_root_path(string $path = __DIR__,
 /**
  * joins all the given paths to the given $base_path.
  * 
+ * TODO try to accept varargs with a default $base_path set to get_root_path()...
  */
-function join_paths(string $base_path, string ...$paths): string {
+function join_paths(string $base_path, string ...$paths): string|bool {
     foreach ( $paths as $p ) 
         $base_path .= DIRECTORY_SEPARATOR . $p;
 
-    return $base_path;
+    return realpath($base_path);
 }
 
+/**
+ * logs output to the browser's console.
+ */
+function console_log(mixed $msg): void {
+    $js_code = 'console.log(' . json_encode($msg) . ');';
+    echo '<script>' . $js_code . '</script>';
+}
+
+/**
+ * raises javascript alert on page refresh or form submit.
+ */
+function raise_alert(string $msg): void {
+    echo '<script>alert("' . $msg . '");</script>';
+}
 ?>

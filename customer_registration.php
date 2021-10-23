@@ -1,4 +1,5 @@
 <!-- UI: Prithviraj Narahari, php code: Alexander Martens -->
+<?php session_start(); ?>
 <head>
 <title> CUSTOMER REGISTRATION </title>
 </head>
@@ -118,9 +119,34 @@
 </HTML>
 <?php
 
-require __DIR__ . '/src/utils.php';
+require_once __DIR__ . '/src/db.php';
+require_once __DIR__ . '/src/utils.php';
 
-echo "<br>";
-print_r(join_paths(get_root_path(), 'hello', 'hi', ));
+$sql = 'SELECT username FROM dummy_user_data;';
+$sql_result = array_map(function($x) { return $x['username']; }, db\select_from_db($sql));
+
+function validate_all_keys(array $keys): bool {
+	foreach($keys as $k => $v) {
+		if ( empty($v) ) {
+			raise_alert("$k cannot be empty.");
+			return false;
+		}
+	}
+	return true;
+}
+
+// if form has been submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	$uname = $_POST['username'];
+
+	// validate username
+	if ( in_array($uname, $sql_result) && !empty($uname) ) {
+		raise_alert($uname . ' already registered, please choose another username.');
+	}
+
+	// ensure all fields are filled
+	if (validate_all_keys($_POST) === true)
+		raise_alert('success');
+}
 
 ?>

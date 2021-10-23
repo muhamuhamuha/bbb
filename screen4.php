@@ -13,11 +13,11 @@
 </style>
 </head>
 <body>
-	<table align="center" style="border:1px solid blue;">
-		<tr>
-			<td align="center">
-				<h5> Reviews For:</h5>
-			</td>
+  <table align="center" style="border:1px solid blue;">
+    <tr>
+	  <td align="center">
+		<h5> Reviews For:</h5>
+	  </td>
 			<td align="left">
 				<h5> </h5>
 			</td>
@@ -27,7 +27,7 @@
 			<td colspan="2">
 			<div id="bookdetails" style="overflow:scroll;height:200px;width:300px;border:1px solid black;">
 			<table>
-						</table>
+			</table>
 			</div>
 			</td>
 		</tr>
@@ -43,3 +43,6 @@
 </body>
 
 </html>
+<?php
+echo $_SESSION['book'];
+?>
