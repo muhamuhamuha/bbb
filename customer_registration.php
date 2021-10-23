@@ -138,15 +138,32 @@ function validate_all_keys(array $keys): bool {
 // if form has been submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$uname = $_POST['username'];
+	$good = false;
 
 	// validate username
 	if ( in_array($uname, $sql_result) && !empty($uname) ) {
 		raise_alert($uname . ' already registered, please choose another username.');
+	} else {
+		$good = true;
 	}
 
-	// ensure all fields are filled
-	if (validate_all_keys($_POST) === true)
-		raise_alert('success');
+	// ensure all fields are filled and update db if so
+	if (validate_all_keys($_POST) === true && $good === true) {
+
+		// filter out button at the end
+		$fields = (array_slice($_POST, 0, -1));
+
+		// filter out retype_pin
+		$new_fields = Array();
+		foreach ($fields as $k => $v) {
+			if ( $k !== 'retype_pin' )
+				$new_fields[$k] = $v;
+		}
+		$ddl = 'INSERT INTO dummy_user_data (';
+		$ddl .= implode(', ', array_keys($new_fields)) . ') VALUES (';
+		$ddl .= implode(',' , array_values($new_fields)) . ');';
+		db\insert_into_db($ddl);
+	}
 }
 
 ?>
