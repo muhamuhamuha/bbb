@@ -18,6 +18,13 @@ echo "<br>category:$category";
 
 $sql = 'SELECT isbn, title FROM book';
 
+
+$books = [
+	['Harry Pothead', 'J.K. Rowling', 'Puffin', '12345', 11.99],
+	['Gary Pothead', 'J.K. Rowling', 'Falcon', '54321', 99.11],
+];
+
+print_r($books);
 // outputHTML function below will use this css
 $style = "overflow:scroll;height:180px;width:400px;";
 $style .= "border:1px solid black;background-color:LightBlue";
@@ -33,7 +40,7 @@ function outputHTML(string $title,
 	// creates 3 rows
 	echo "<tr>";
 	echo "<td align='left'>";
-	echo "<button name='btnCart' id='btnCart' onClick='cart($isbn, '', 'Array', 'all')'>";
+	echo "<button name='btnCart' id='btnCart' onClick='cart(\"$isbn\", \"\", \"Array\", \"all\")'>";
 	echo "Add to Cart";
 	echo "</button>";
 	echo "</td>";
@@ -46,7 +53,7 @@ function outputHTML(string $title,
 	echo "</tr>";  // end row 1
 	echo "<tr>";
 	echo "<td align='left'>";
-	echo "<button name='review' id='review' onClick='review($isbn, $title)'>";
+	echo "<button name='review' id='review' onClick='review(\"$isbn\", \"$title\")'>";
 	echo "Reviews";
 	echo "</button>";
 	echo "</td>";
@@ -99,7 +106,13 @@ function outputHTML(string $title,
 			<td style="width: 350px" colspan="3" align="center">
 				<div id="bookdetails" style="overflow:scroll;height:180px;width:400px;border:1px solid black;background-color:LightBlue">
 					<table>
-						<tr>
+						<?php
+						foreach($books as $book) {
+							[$t, $a, $p, $i, $pr] = $book;
+							outputHTML($t, $a, $p, $i, $pr);
+						}
+						?>
+						<!-- <tr>
 							<td align='left'>
 								<button name='btnCart' id='btnCart' onClick='cart("123441", "", "Array", "all")'>
 									Add to Cart
@@ -159,7 +172,7 @@ function outputHTML(string $title,
 							<td colspan='2'>
 								<p>_______________________________________________</p>
 							</td>
-						</tr>
+						</tr> -->
 					</table>
 				</div>
 
