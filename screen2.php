@@ -51,7 +51,9 @@
 	const submitBtn = document.querySelector('input[name="search"]');
 	
 	submitBtn.disabled = true;
-	submitField.addEventListener('input', () => {
-		submitBtn.disabled = submitField.value.length === 0;
-	});
+
+	/** returns true if submitField has text */
+	function noInput() { return submitField.value.length === 0; }
+	submitField.addEventListener('input', () => submitBtn.disabled = noInput());
+
 </script>
