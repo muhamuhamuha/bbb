@@ -1,5 +1,19 @@
-
 <!-- Figure 3: Search Result Screen by Prithviraj Narahari, php coding: Alexander Martens -->
+<?php
+require_once __DIR__ . '/src/db.php';
+
+// the html forwards the following listed parameters
+// $searchon is an array, the rest are variables
+// $category will be returned as a number..‍️.🤦‍♂️ 
+list($searchfor, $search, $searchon, $category) = array_values($_GET);
+print_r($_GET);
+echo "<br>searchfor: $searchfor<br>search: $search<br>";
+
+print_r($searchon);
+echo "<br>category:$category";
+
+?>
+
 <html>
 <head>
 	<title> Search Result - 3-B.com </title>

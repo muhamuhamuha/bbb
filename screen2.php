@@ -45,6 +45,13 @@
 </body>
 </html>
 
-<?php
-echo 'hello';
-?>
+<script>
+	// disables search button if nothing is added to input field
+	const submitField = document.querySelector('input[name="searchfor"]');
+	const submitBtn = document.querySelector('input[name="search"]');
+	
+	submitBtn.disabled = true;
+	submitField.addEventListener('input', () => {
+		submitBtn.disabled = submitField.value.length === 0;
+	});
+</script>
