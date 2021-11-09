@@ -122,8 +122,6 @@
 require_once __DIR__ . '/src/db.php';
 require_once __DIR__ . '/src/utils.php';
 
-$sql = 'SELECT username FROM dummy_user_data;';
-$sql_result = array_map(function($x) { return $x['username']; }, db\select_from_db($sql));
 
 function validate_all_keys(array $keys): bool {
 	foreach($keys as $k => $v) {
@@ -137,6 +135,8 @@ function validate_all_keys(array $keys): bool {
 
 // if form has been submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	$sql = 'SELECT username FROM dummy_user_data;';
+	$sql_result = array_map(function($x) { return $x['username']; }, db\select_from_db($sql));
 	$uname = $_POST['username'];
 	$good = false;
 

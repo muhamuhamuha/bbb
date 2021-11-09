@@ -27,10 +27,16 @@
 		</tr>
 		<tr>
 			<td>Category: </td>
-				<td><select name="category">
+				<td>
+					<select name="category">
 						<option value='all' selected='selected'>All Categories</option>
-						<option value='1'>Fantasy</option><option value='2'>Adventure</option><option value='3'>Fiction</option><option value='4'>Horror</option>				</select></td>
-				</form>
+						<option value='1'>Fantasy</option>
+						<option value='2'>Adventure</option>
+						<option value='3'>Fiction</option>
+						<option value='4'>Horror</option>
+					</select>
+				</td>
+			</form>
 	<form action="index.php" method="post">	
 				<td><input type="submit" name="exit" value="EXIT 3-B.com" /></td>
 			</form>
@@ -38,3 +44,7 @@
 	</table>
 </body>
 </html>
+
+<?php
+echo 'hello';
+?>
