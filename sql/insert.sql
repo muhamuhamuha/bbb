@@ -6,6 +6,8 @@ INSERT INTO CUSTOMER VALUES ('BM734','54321','Brie','Macbeth','981 packard st','
 INSERT INTO CUSTOMER VALUES ('MJ463','71231','Miranda','Johnson','612 Orchard Rd','Ypsilanti','Michigan','48365','VISA',3333333333333333,'2023-04-09',333333);  
 
 -- book table
+INSERT INTO BOOK VALUES (5555555333444, 'Anna Karenina', 'Leo Tolstoy', 'The Russian Messenger', 20.00, 'World Literature', 0);
+
 INSERT INTO BOOK VALUES (1234567891234, 'Lord of the Rings', 'J.R.R. Tolkien', 'Allen & Unwin', 50.00, 'Fantasy', 7);
 
 INSERT INTO BOOK VALUES (1111111111111, 'Moby Dick', 'Herman Melville', 'Richard Bentley', 63.00, 'American Literature', 4);

@@ -35,10 +35,9 @@
 		}
 	}
 
-	if ( count($where_clauses) > 0 ) {
-		$where_clauses = implode(" AND ", $where_clauses);
-		$sql .= " WHERE $where_clauses";
-	}
+	$where_clauses []= 'Inventory > 0';
+	$where_clauses = implode(" AND ", $where_clauses);
+	$sql .= " WHERE $where_clauses";
 	// pull from sql
 	$books = db\select_from_db($sql . ';');
 
