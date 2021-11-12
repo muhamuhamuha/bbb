@@ -4,27 +4,17 @@
 
 	// the html forwards the following listed parameters
 	// $searchon is an array, the rest are variables
-	// $category will be returned as a number..‍️.🤦‍♂️
+	// $category is a string
 	// $search is useless
 	// $searchfor must be split into an array if there's a comma
 	[$searchfor, $search, $searchon, $category] = array_values($_GET);
-	$category_map = ['1' => 'Fantasy',
-									 '2' => 'Adventure',
-									 '3' => 'Fiction',
-									 '4' => 'Horror'];
 
 
-	echo "searchfor: $searchfor<br>";
-	echo 'searchon:<br>';
-	print_r($searchon);
-	echo '<br>';
-	$combined = array_map(null, $searchon, explode(',', $searchfor));
-	echo implode(', ', array_map(function($x) { return "$x[0]: $x[1]"; }, $combined));
-
+	// create sql
 	$sql = 'SELECT Title, Author, Publisher, ISBN, Price FROM BOOK';
 	$where_clauses = [];
 	if ($category !== 'all') {
-		$where_clauses []= 'Category = "' . $category_map[$category] . '"';
+		$where_clauses []= 'Category = "' . $category . '"';
 	}
 
 	if (in_array('anywhere', $searchon)) {
@@ -49,23 +39,8 @@
 		$where_clauses = implode(" AND ", $where_clauses);
 		$sql .= " WHERE $where_clauses";
 	}
-	echo "<br>$sql<br>";
+	// pull from sql
 	$books = db\select_from_db($sql . ';');
-
-	// $books = [
-	// 	['Harry Potter', 'J.K. Rowling', 'Puffin', '12345', 11.99],
-	// 	['Gary Potter', 'K.J. Rowling', 'Falcon', '54321', 99.11],
-	// 	['Larry Potter', 'R. Jkowling', 'Flamingo', '10101', 500],
-	// 	['Mary Potter', 'R. Kjowling', 'Sparrow', '10101', 500],
-	// ];
-	// echo "<br>";
-	// echo "<br>";
-	// print_r($books);
-
-	// function disableButton(string $isbn): bool {
-		// $sql = 'SELECT "" FROM ';
-		// db\select_from_db();
-	// }
 
 	/** spits out data structured into html table syntax that this UI expects... */
 	function outputHTML(string $title,

@@ -1,5 +1,20 @@
 
 <!-- Figure 2: Search Screen by Alexander -->
+<?php
+	require_once __DIR__ . '/src/db.php';
+	// read unique categories from sql
+	$sql = 'SELECT DISTINCT Category FROM BOOK;';
+	$sql_result = db\select_from_db($sql);
+	$cats = array_map(function($arr) { return $arr['Category']; }, $sql_result);
+
+	function outputHTML($categories) {
+		foreach ($categories as $cat) {
+			echo "<option value='$cat'>$cat</option>";
+		}
+		echo "<option value='all' selected='selected'>All Categories</option>";
+	}
+
+?>
 <html>
 <head>
 	<title>SEARCH - 3-B.com</title>
@@ -29,11 +44,7 @@
 			<td>Category: </td>
 				<td>
 					<select name="category">
-						<option value='all' selected='selected'>All Categories</option>
-						<option value='1'>Fantasy</option>
-						<option value='2'>Adventure</option>
-						<option value='3'>Fiction</option>
-						<option value='4'>Horror</option>
+						<?php outputHTML($cats); ?>
 					</select>
 				</td>
 			</form>
