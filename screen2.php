@@ -44,7 +44,6 @@
 	</table>
 </body>
 </html>
-
 <script>
 	// disables search button if nothing is added to input field
 	const submitField = document.querySelector('input[name="searchfor"]');

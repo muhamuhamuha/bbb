@@ -2,9 +2,10 @@
 
 	// dummy data
 	$books = [
-		['Harry Pothead', 'J.K. Rowling', 'Puffin', '12345', 11.99],
-		['Gary Pothead', 'J.K. Rowling', 'Falcon', '54321', 99.11],
-		['Mowgli and Dancing Teapot', 'R. Kipling', 'Flamingo', '10101', 500],
+		['Harry Potter', 'J.K. Rowling', 'Puffin', '12345', 11.99],
+		['Gary Potter', 'K.J. Rowling', 'Falcon', '54321', 99.11],
+		['Larry Potter', 'R. Jkowling', 'Flamingo', '10101', 500],
+		['Mary Potter', 'R. Kjowling', 'Sparrow', '10101', 500],
 	];
 
 
@@ -122,6 +123,7 @@
 </body>
 
 <?php
+	require_once __DIR__ . '/src/utils.php';
 
 	/**
 	 * if the user deletes, POST is a nested dictionary
@@ -135,15 +137,10 @@
 		
 	}
 
-	/** utility function to check if server is posting and something else is happening */
-	function checkPost(bool $and): bool {
-		return $_SERVER['REQUEST_METHOD'] === 'POST' && $and;
-	}
-
-	if (checkPost(array_key_exists('delete', $_POST))) {
+	if (checkRequest(array_key_exists('delete', $_POST))) {
 		print_r($_POST);
 		
-	} elseif (checkPost(array_key_exists('recalculate_payment', $_POST))) {
+	} elseif (checkRequest(array_key_exists('recalculate_payment', $_POST))) {
 		echo('hello<br>');
 		print_r($_POST);
 		// hit database and recalculate sum
