@@ -50,17 +50,17 @@
 		$sql .= " WHERE $where_clauses";
 	}
 	echo "<br>$sql<br>";
-	$sql_result = db\select_from_db($sql . ';');
-	print_r($sql_result);
+	$books = db\select_from_db($sql . ';');
 
-	// } elseif ($searchon[0] !== 'anywhere' && strpos($sql, 'WHERE') !== false)
-
-	$books = [
-		['Harry Potter', 'J.K. Rowling', 'Puffin', '12345', 11.99],
-		['Gary Potter', 'K.J. Rowling', 'Falcon', '54321', 99.11],
-		['Larry Potter', 'R. Jkowling', 'Flamingo', '10101', 500],
-		['Mary Potter', 'R. Kjowling', 'Sparrow', '10101', 500],
-	];
+	// $books = [
+	// 	['Harry Potter', 'J.K. Rowling', 'Puffin', '12345', 11.99],
+	// 	['Gary Potter', 'K.J. Rowling', 'Falcon', '54321', 99.11],
+	// 	['Larry Potter', 'R. Jkowling', 'Flamingo', '10101', 500],
+	// 	['Mary Potter', 'R. Kjowling', 'Sparrow', '10101', 500],
+	// ];
+	// echo "<br>";
+	// echo "<br>";
+	// print_r($books);
 
 	// function disableButton(string $isbn): bool {
 		// $sql = 'SELECT "" FROM ';
@@ -146,7 +146,7 @@
 						<?php
 							foreach($books as $book) {
 								// title, author, publisher, isbn, price
-								[$t, $a, $p, $i, $pr] = $book;
+								[$t, $a, $p, $i, $pr] = array_values($book);
 								outputHTML($t, $a, $p, $i, $pr);
 							}
 						?>
