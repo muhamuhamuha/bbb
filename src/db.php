@@ -6,7 +6,7 @@ require_once __DIR__.'/utils.php';
 // this is why it would be nice to have decorators...
 function select_from_db(string $sql, string $db_path = null): array {
     if ( !isset($db_path) )
-        $db_path = join_paths(get_root_path(), 'database', 'bbb.sqlite');
+        $db_path = join_paths(get_root_path(), 'database', 'bbb_database.sqlite');
     
     $db = new SQLite3($db_path);
 
@@ -24,7 +24,7 @@ function select_from_db(string $sql, string $db_path = null): array {
 
 function insert_into_db(string $ddl, string $db_path = null): void {
     if ( !isset($db_path) )
-        $db_path = join_paths(get_root_path(), 'database', 'bbb.sqlite');
+        $db_path = join_paths(get_root_path(), 'database', 'bbb_database.sqlite');
     
     $db = new SQLite3($db_path);
     $result = $db->exec($ddl);
