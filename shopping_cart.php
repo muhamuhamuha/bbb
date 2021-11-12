@@ -1,4 +1,5 @@
 <?php
+	require_once __DIR__ . '/src/db.php';
 
 	// dummy data
 	$books = [
@@ -83,7 +84,7 @@
 							<?php
 								foreach($books as $book) {
 									// title, author, publisher, isbn, price
-									[$t, $a, $p, $i, $pr] = $book;
+									[$t, $a, $p, $i, $pr] = array_values($book);
 									outputHTML($t, $a, $p, $i, $pr);
 								}
 							?>

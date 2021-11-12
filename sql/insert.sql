@@ -21,8 +21,12 @@ INSERT INTO BOOK VALUES (2222222222222, 'Zen and the Art of Motorcycle Maintenan
 INSERT INTO BOOK VALUES (9999999999999, 'The Dunwich Horror', 'H.P. Lovecraft', 'Weird Tales', 5.99, 'Horror', 1);
 
 -- review table
-INSERT INTO REVIEW VALUES (123456,'fantastic book would recommend!',1111111111111);
+INSERT INTO REVIEW ("Description", ISBN) VALUES ('fantastic book would recommend!',1111111111111);
 
-INSERT INTO REVIEW VALUES (654321,'something for nerds, it was ok',9876543210123);
+INSERT INTO REVIEW ("Description", ISBN) VALUES ('something for nerds, it was ok',9876543210123);
 
-INSERT INTO REVIEW VALUES (231321,'the best of the best',1234567891234);
+INSERT INTO REVIEW ("Description", ISBN) VALUES ('da best',9876543210123);
+
+INSERT INTO REVIEW ("Description", ISBN) VALUES ('oh my god when is the sequel coming out i cannot wait',9876543210123);
+
+INSERT INTO REVIEW ("Description", ISBN) VALUES ('the best of the best',1234567891234);

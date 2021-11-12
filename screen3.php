@@ -160,7 +160,7 @@
 
 	}
 	else if ( numItems > 0 && numItems !== searchon.length ) {
-		alert(`Given ${numItems} items: ${searchfor} but only ${searchon.length} "Search In" option(s).`);
+		alert(`Given ${numItems} items: ${searchfor} but ${searchon.length} "Search In" option(s).`);
 		window.history.back();
 	}
 

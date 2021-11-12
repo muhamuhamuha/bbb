@@ -2,19 +2,11 @@
 <?php
 require_once __DIR__ . '/src/db.php';
 
-// it would have been smart to add isbn in dummy database but I didn't so we filter by title only...
-list($isbn, $title) = array_values($_GET);
+[$isbn, $title] = array_values($_GET);
+$sql = "SELECT \"Description\" FROM REVIEW NATURAL JOIN BOOK ";
+$sql .= "WHERE ISBN = '$isbn';";
+$sql_result = db\select_from_db($sql);
 
-// WHERE clause didn't work for some stupid reason GOD I HATE PHP.
-$sql_result = db\select_from_db("SELECT title, review FROM dummy_review;");
-
-// since WHERE clause didn't work, we filter...
-$only_title_reviews = array_filter($sql_result, function($x) use ($title) {
-	return $x['title'] === $title;
-});
-
-// since php filter is stupid, we filter again...
-$only_title_reviews = array_map(function($x) { return $x['review']; }, array_values($only_title_reviews));
 
 ?>
 <!DOCTYPE html>
@@ -46,8 +38,8 @@ $only_title_reviews = array_map(function($x) { return $x['review']; }, array_val
 			<table>
 				<!-- why so many tables? -->
 				<?php
-				foreach ($only_title_reviews as $review) {
-					echo '<tr class="field_set"><td>' . $review . '</td></tr>';
+				foreach ($sql_result as $review) {
+					echo '<tr><td class="field_set">' . $review['Description'] . '</td></tr>';
 				}
 				?>
 			</table>
