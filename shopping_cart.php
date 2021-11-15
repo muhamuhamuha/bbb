@@ -1,19 +1,19 @@
 <?php
 	require_once __DIR__ . '/src/db.php';
 
-	// dummy data
-	$books = [
-		['Harry Potter', 'J.K. Rowling', 'Puffin', '12345', 11.99],
-		['Gary Potter', 'K.J. Rowling', 'Falcon', '54321', 99.11],
-		['Larry Potter', 'R. Jkowling', 'Flamingo', '10101', 500],
-		['Mary Potter', 'R. Kjowling', 'Sparrow', '10101', 500],
-	];
-
+	$sql = 'SELECT Title, Author, Publisher, ISBN, Quantity, Price ';
+	$sql .= 'FROM "BOOK-SHOPPING_CART" NATURAL JOIN BOOK;';
+	$books = db\select_from_db($sql);
+	
 
 	/** used at the end to calculate subtotals */
 	function calcSubtotal(array $books): float {
 		// filter out prices
-		$prices = array_map(function($x) { return end($x); }, $books);
+		$prices = array_map(function($x) { return floatval(end($x)); }, $books);
+		$quantites = array_map(function($x) { return intval($x['Quantity']); }, $books);
+		for ($i = 0; $i < count($prices); $i++) {
+			$prices[$i] = $quantites[$i] * $prices[$i];
+		}
 		return array_sum($prices);
 	}
 
@@ -22,10 +22,11 @@
 											string $author,
 											string $publisher,
 											string $isbn,
+											string $quantity,
 											float $price): void {
   	echo "<tr>";
 		echo "<td>";
-		echo "<button name='delete' id='delete' onClick='del(\"$isbn\")'>";
+		echo "<button name='delete' id='delete' onClick='del(\"$isbn\"); return false;'>";
 		echo "Delete Item";
 		echo "</button>";
 		echo "</td>";
@@ -35,7 +36,7 @@
 		echo "<b>Publisher:</b> $publisher";
 		echo "</td>";
 		echo "<td>";
-		echo "<input id='txt$isbn' name='txt$isbn' value='1' size='1' />";
+		echo "<input id='txt$isbn' name='txt$isbn' value='$quantity' size='1' />";
 		echo "</td>";
 		echo "<td>$price</td>";
   	echo "</tr>";
@@ -84,26 +85,10 @@
 							<?php
 								foreach($books as $book) {
 									// title, author, publisher, isbn, price
-									[$t, $a, $p, $i, $pr] = array_values($book);
-									outputHTML($t, $a, $p, $i, $pr);
+									[$t, $a, $p, $i, $q, $pr] = array_values($book);
+									outputHTML($t, $a, $p, $i, $q, $pr);
 								}
 							?>
-							<!-- <tr>
-								<td>
-									<button name='delete' id='delete' onClick='del("123441");return false;'>
-										Delete Item
-									</button>
-								</td>
-								<td>
-									iuhdf</br>
-									<b>By</b> Avi Silberschatz</br>
-									<b>Publisher:</b> McGraw-Hill
-								</td>
-								<td>
-									<input id='txt123441' name='txt123441' value='1' size='1' />
-								</td>
-								<td>12.99</td>
-							</tr> -->
 						</table>
 					</div>
 				</td>
@@ -122,30 +107,73 @@
 		</tr>
 	</table>
 </body>
+<script>
+	const recalcBtn = document.querySelector('input[id="recalculate_payment"]');
+	const xpath = "//td[contains(text(), 'Subtotal: ')]";
+	const subtotalText =
+		document
+			.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+			.singleNodeValue;
+		
+	/** Apparently javascript will not round numbers properly. */
+	function roundToTwo(num) {    
+    return +(Math.round(num + "e+2") + "e-2");
+	}
 
+	recalcBtn.addEventListener('click', (e) => {
+		// e.preventDefault();
+
+		quantities =
+			[...document.querySelectorAll('input[id^="txt"]')]
+			.map(x => parseInt(x.value));
+
+		prices =
+			[...document.querySelectorAll('td + td + td + td')]
+			.map(x => roundToTwo(parseFloat(x.textContent)));
+
+		summed = 
+			quantities
+			.map( (q, index) => q * prices[index] )
+			.reduce((x, a) => x + a, 0)
+			.toString()
+			.match(/\d+\.\d?\d?/)[0];
+
+		// replace subtotal value
+		subtotalText.textContent = subtotalText.textContent.replace(/\d+\.?\d*/, summed);
+	});
+
+</script>
 <?php
 	require_once __DIR__ . '/src/utils.php';
 
-	/**
-	 * if the user deletes, POST is a nested dictionary
-	 * where the isbn to be deleted will have the key 'delete',
-	 * and it will in turn be the key to the quantity to delete
-	 * Array([delete] => [txt000000] => 2)
-	 */
-	function processDeletes(array $deletes): bool {
-		$item2del = $deletes['delete'];
-		// hit the database and remove
-		
+	if ( checkRequest(array_key_exists('delIsbn', $_GET), 'GET') ) {
+		$isbn = $_GET['delIsbn'];
+
+		// hit database twice, once to save quantity, and then again to delete...
+		$sql = 'SELECT Quantity FROM "BOOK-SHOPPING_CART" WHERE ISBN=' . $isbn . ';';
+		$quantity = array_map(function ($x) { return $x['Quantity']; }, db\select_from_db($sql))[0];
+		echo "<br>quan: $quantity";
+
+		// db\crud_db(str_replace('SELECT Quantity', 'DELETE', $sql)));
+		echo "<br>";
+	} elseif ( checkRequest(array_key_exists('recalculate_payment', $_POST)) ){
+
+		foreach ($_POST as $k => $v) {
+			// keep only isbns
+			if (str_starts_with($k, 'txt')) {
+				$sql = 'UPDATE "BOOK-SHOPPING_CART" SET Quantity=' . $v . ' WHERE ';
+				$sql .= 'ISBN=' . substr($k, 3) . ';';  // cut out 'txt' prefix
+
+				// update database
+				db\crud_db($sql);
+			}
+		}
 	}
 
-	if (checkRequest(array_key_exists('delete', $_POST))) {
-		print_r($_POST);
-		
-	} elseif (checkRequest(array_key_exists('recalculate_payment', $_POST))) {
-		echo('hello<br>');
-		print_r($_POST);
-		// hit database and recalculate sum
+	echo "<br>GET<br>";
+	print_r($_GET);
+	echo "<br>POST<br>";
+	print_r($_POST);
 
-	}
 
 ?>
