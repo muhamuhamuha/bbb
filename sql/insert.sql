@@ -14,6 +14,14 @@ INSERT INTO BOOK VALUES (1111111111111, 'Moby Dick', 'Herman Melville', 'Richard
 
 INSERT INTO BOOK VALUES (9876543210123, 'Harry Potter', 'J.K. Rowling', 'Bloomsbury', 43.00, 'Fantasy', 10);
 
+INSERT INTO BOOK VALUES (3213213453568, 'Harry Potter and the Sorcerers Stone', 'J.K. Rowling', 'Bloomsbury', 43.00, 'Fantasy', 10);
+
+INSERT INTO BOOK VALUES (4494413453568, 'Harry Potter and the Chamber of Secrets', 'J.K. Rowling', 'Bloomsbury', 43.00, 'Fantasy', 10);
+
+INSERT INTO BOOK VALUES (3213111111168, 'Harry Potter and the Prisoner of Azkaban', 'J.K. Rowling', 'Bloomsbury', 43.00, 'Fantasy', 10);
+
+INSERT INTO BOOK VALUES (4444444444444, 'Harry Potter and the Goblet of Fire', 'J.K. Rowling', 'Bloomsbury', 43.00, 'Fantasy', 10);
+
 INSERT INTO BOOK VALUES (9272523210123, 'Speaker for the Dead', 'Orson Scott Card', 'Tor Books', 10.00, 'Science Fiction', 10);
 
 INSERT INTO BOOK VALUES (2222222222222, 'Zen and the Art of Motorcycle Maintenance: An Inquiry Into VaLues', 'Robert M. Pirsig', 'William Morrow', 43.00, 'Adventure', 10);

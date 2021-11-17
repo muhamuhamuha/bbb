@@ -10,28 +10,28 @@
 	[$searchfor, $search, $searchon, $category] = array_values($_GET);
 
 
-	// create sql
 	$sql = 'SELECT Title, Author, Publisher, ISBN, Price FROM BOOK';
 	$where_clauses = [];
 	if ($category !== 'all') {
 		$where_clauses []= 'Category = "' . $category . '"';
 	}
 
-	if (in_array('anywhere', $searchon)) {
-		$more_clauses = "(Title = '$searchfor' OR AUTHOR = '$searchfor' ";
-		$more_clauses .= "OR Publisher = '$searchfor' OR ISBN = '$searchfor')";
-		$where_clauses []= $more_clauses;
-	} else {
-		if ( count($searchon) === 1 ) {
-			$where_clauses []= $searchon[0] . " = '$searchfor'";
+	if (is_array($searchon)) {
+		if (in_array('anywhere', $searchon)) {
+			$more_clauses = "(Title = '$searchfor' OR AUTHOR = '$searchfor' ";
+			$more_clauses .= "OR Publisher = '$searchfor' OR ISBN = '$searchfor')";
+			$where_clauses []= $more_clauses;
+		} else {
+			if ( count($searchon) === 1 ) {
+				$where_clauses []= $searchon[0] . " = '$searchfor'";
+			}	else {
+				// combine columns to search and search comma-separated criteria
+				$combined = array_map(null, $searchon, explode(',', $searchfor));
+				// serialize tuples
+				$combined = array_map(function($arr) { return "$arr[0] = '$arr[1]'"; }, $combined);
 
-		}	else {
-			// combine columns to search and search comma-separated criteria
-			$combined = array_map(null, $searchon, explode(',', $searchfor));
-			// serialize tuples
-			$combined = array_map(function($arr) { return "$arr[0] = '$arr[1]'"; }, $combined);
-
-			$where_clauses = array_merge($where_clauses, $combined);
+				$where_clauses = array_merge($where_clauses, $combined);
+			}
 		}
 	}
 
@@ -87,7 +87,7 @@
 		function review(isbn, title) {
 			window.location.href = "screen4.php?isbn=" + isbn + "&title=" + title;
 		}
-		//add to cart
+		// add to cart
 		function cart(isbn, searchfor, searchon, category) {
 			window.location.href = "screen3.php?cartisbn=" + isbn + "&searchfor=" + searchfor + "&searchon=" + searchon + "&category=" + category;
 		}
@@ -159,7 +159,9 @@
 		window.history.back();
 
 	}
-	else if ( numItems > 0 && numItems !== searchon.length ) {
+	else if ( numItems > 0
+						&& numItems !== searchon.length
+						&& window.location.href.indexOf('screen2') > -1 ) {
 		alert(`Given ${numItems} items: ${searchfor} but ${searchon.length} "Search In" option(s).`);
 		window.history.back();
 	}
@@ -168,7 +170,6 @@
 
 	// for (let i = 0; i < cartButtons.length; i += 1) {
 	// 	button = cartButtons[i];
-	// 	console.log(button);
 	// 	button.addEventListener('click', function() { button.disabled = true; });
 	// }
 	// cartButtons.map(button => button.addEventListener('click', (e) => e.target.disabled = true));
@@ -183,9 +184,20 @@
 		// add cartisbn to cart
 		$isbn = $_GET['cartisbn'];
 
-		// use title instead of isbn in alert message
-		raise_alert("ISBN: $isbn added successfully added to cart!");
-
+		$sql = "SELECT Price FROM BOOK WHERE ISBN = '$isbn'";
+		$sql_result = db\select_from_db($sql);
+		$price = $sql_result[0]['Price'];
+		
+		// TODO use cart id key from customer table
+		$ret = db\crud_db("INSERT INTO \"BOOK-SHOPPING_CART\" VALUES(123456, $isbn, 1, $price);");
+		if ( $ret ) {
+			// database sent an error
+			raise_alert('That book is already in your cart. Happy shopping! :)');
+		} else {
+			// use title instead of isbn in alert message
+			raise_alert("ISBN: $isbn added successfully to the cart!");
+			header('Refresh: 0; url=screen2.php');
+		}
 	}
 
 ?>

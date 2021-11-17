@@ -10,9 +10,9 @@
 	function calcSubtotal(array $books): float {
 		// filter out prices
 		$prices = array_map(function($x) { return floatval(end($x)); }, $books);
-		$quantites = array_map(function($x) { return intval($x['Quantity']); }, $books);
+		$quantities = array_map(function($x) { return intval($x['Quantity']); }, $books);
 		for ($i = 0; $i < count($prices); $i++) {
-			$prices[$i] = $quantites[$i] * $prices[$i];
+			$prices[$i] = $quantities[$i] * $prices[$i];
 		}
 		return array_sum($prices);
 	}
@@ -108,72 +108,59 @@
 	</table>
 </body>
 <script>
-	const recalcBtn = document.querySelector('input[id="recalculate_payment"]');
-	const xpath = "//td[contains(text(), 'Subtotal: ')]";
-	const subtotalText =
-		document
-			.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-			.singleNodeValue;
-		
-	/** Apparently javascript will not round numbers properly. */
-	function roundToTwo(num) {    
-    return +(Math.round(num + "e+2") + "e-2");
-	}
+	// prevent page from reloading if user hits enter in one of the quantity fields
+	quantities = document.querySelectorAll('input[id^="txt"]');
 
-	recalcBtn.addEventListener('click', (e) => {
-		// e.preventDefault();
-
-		quantities =
-			[...document.querySelectorAll('input[id^="txt"]')]
-			.map(x => parseInt(x.value));
-
-		prices =
-			[...document.querySelectorAll('td + td + td + td')]
-			.map(x => roundToTwo(parseFloat(x.textContent)));
-
-		summed = 
-			quantities
-			.map( (q, index) => q * prices[index] )
-			.reduce((x, a) => x + a, 0)
-			.toString()
-			.match(/\d+\.\d?\d?/)[0];
-
-		// replace subtotal value
-		subtotalText.textContent = subtotalText.textContent.replace(/\d+\.?\d*/, summed);
-	});
+	quantities.forEach(x => x.addEventListener('keypress', e => {
+		if (e.key === 'Enter')
+			e.preventDefault();
+	}));
 
 </script>
 <?php
 	require_once __DIR__ . '/src/utils.php';
 
+	/** checks if given isbn is in inventory */
+	function in_inventory(string $isbn, int $amount = 0): bool {
+		$sql = 'SELECT Inventory FROM BOOK WHERE ISBN=' . $isbn . ';';
+		$inv = array_map(function($x) { return $x['Inventory']; }, db\select_from_db($sql))[0];
+		return intval($inv) > $amount;
+	}
+
 	if ( checkRequest(array_key_exists('delIsbn', $_GET), 'GET') ) {
 		$isbn = $_GET['delIsbn'];
 
-		// hit database twice, once to save quantity, and then again to delete...
+		// hit database twice, once to get quantity, and then again to delete...
 		$sql = 'SELECT Quantity FROM "BOOK-SHOPPING_CART" WHERE ISBN=' . $isbn . ';';
-		$quantity = array_map(function ($x) { return $x['Quantity']; }, db\select_from_db($sql))[0];
-		echo "<br>quan: $quantity";
+		$sql_result = db\select_from_db($sql);
+		$quantity = array_map(function ($x) { return $x['Quantity']; }, $sql_result)[0];
 
-		// db\crud_db(str_replace('SELECT Quantity', 'DELETE', $sql)));
-		echo "<br>";
+		// delete item from shopping cart
+		db\crud_db(str_replace('SELECT Quantity', 'DELETE', $sql));
+
+		// hit database again and update BOOK
+		$sql = 'UPDATE BOOK SET Inventory = Inventory + ' . $quantity;
+		$sql .= " WHERE ISBN = $isbn;";
+		db\crud_db($sql);
 	} elseif ( checkRequest(array_key_exists('recalculate_payment', $_POST)) ){
 
-		foreach ($_POST as $k => $v) {
+		foreach ($_POST as $txtIsbn => $quantity) {
 			// keep only isbns
-			if (str_starts_with($k, 'txt')) {
-				$sql = 'UPDATE "BOOK-SHOPPING_CART" SET Quantity=' . $v . ' WHERE ';
-				$sql .= 'ISBN=' . substr($k, 3) . ';';  // cut out 'txt' prefix
+			if (str_starts_with($txtIsbn, 'txt')) {
+				$isbn = substr($txtIsbn, 3);
 
-				// update database
-				db\crud_db($sql);
+				if ( in_inventory($isbn, intval($quantity)) ) {
+					$sql = 'UPDATE "BOOK-SHOPPING_CART" SET Quantity=' . $quantity . ' WHERE ';
+					$sql .= 'ISBN=' . $isbn . ';';
+
+					// update database and refresh page to actually calculate subtotal
+					db\crud_db($sql);
+					header('Refresh:0; url=shopping_cart.php');
+				} else {
+					raise_alert('Sorry, we don\'t have that many in stock!');
+				}
 			}
 		}
 	}
-
-	echo "<br>GET<br>";
-	print_r($_GET);
-	echo "<br>POST<br>";
-	print_r($_POST);
-
 
 ?>

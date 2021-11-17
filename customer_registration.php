@@ -131,10 +131,9 @@
 		return true;
 	}
 
-	// if form has been submitted
-	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-		$sql = 'SELECT username FROM dummy_user_data;';
-		$sql_result = array_map(function($x) { return $x['username']; }, db\select_from_db($sql));
+	if (checkRequest()) {  // form has been submitted
+		$sql = 'SELECT Username FROM CUSTOMER;';
+		$sql_result = array_map(function($x) { return $x['Username']; }, db\select_from_db($sql));
 		$uname = $_POST['username'];
 		$good = false;
 
@@ -157,9 +156,11 @@
 				if ( $k !== 'retype_pin' )
 					$new_fields[$k] = $v;
 			}
-			$ddl = 'INSERT INTO dummy_user_data (';
-			$ddl .= implode(', ', array_keys($new_fields)) . ') VALUES (';
-			$ddl .= implode(',' , array_values($new_fields)) . ');';
+
+			$dml = 'INSERT INTO CUSTOMER ';
+			$dml .= '(Username,PIN,FirstName,LastName,Address,City,';
+			$dml .= 'State,ZIP,CardType,CardNumber,CardExpDate,CartID) VALUES ';
+			// $ddl .= implode(',' , array_values($new_fields)) . // add CartID
 			db\insert_into_db($ddl);
 		}
 	}
