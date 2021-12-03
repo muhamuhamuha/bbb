@@ -120,8 +120,7 @@
 	require_once __DIR__ . '/src/db.php';
 	require_once __DIR__ . '/src/utils.php';
 
-
-	function validate_all_keys(array $keys): bool {
+	function assert_no_empty_fields(array $keys): bool {
 		foreach($keys as $k => $v) {
 			if ( empty($v) ) {
 				raise_alert("$k cannot be empty.");
@@ -145,7 +144,7 @@
 		}
 
 		// ensure all fields are filled and update db if so
-		if (validate_all_keys($_POST) && $good) {
+		if (assert_no_empty_fields($_POST) && $good) {
 
 			// filter out button at the end
 			$fields = (array_slice($_POST, 0, -1));
@@ -154,14 +153,53 @@
 			$new_fields = Array();
 			foreach ($fields as $k => $v) {
 				if ( $k !== 'retype_pin' )
-					$new_fields[$k] = $v;
+					// replaces slash in exp date for database
+					$new_fields[$k] = str_replace('/', '', $v);
 			}
 
-			$dml = 'INSERT INTO CUSTOMER ';
-			$dml .= '(Username,PIN,FirstName,LastName,Address,City,';
-			$dml .= 'State,ZIP,CardType,CardNumber,CardExpDate,CartID) VALUES ';
-			// $ddl .= implode(',' , array_values($new_fields)) . // add CartID
-			db\insert_into_db($ddl);
+		
+
+			// validate here instead of passing to the db and getting errors.
+			if (!preg_match('/\d{4}/', $new_fields['expiration'])) {
+				$good = false;
+				 raise_alert('Invalid date format in card expiration field.');
+			}
+
+			if (!preg_match('/\d{16}/', $new_fields['card_number'])) {
+				$good = false;
+				raise_alert('Invalid card number given.');
+			}
+
+			if ($fields['retype_pin'] !== $new_fields['pin']) {
+				$good = false;
+				raise_alert('PIN numbers must match.');
+			}
+
+			if (strlen($fields['pin']) > 5) {
+				$good = false;
+				raise_alert('PIN can only by 5 characters long.');
+			}
+
+			if (strlen($fields['zip']) !== 5 || !preg_match('/\d{5}/', $fields['zip'])) {
+				$good = false;
+				raise_alert('Zip code must be 5 digits.');
+			}
+
+			if ($good) {
+				$dml = 'INSERT INTO CUSTOMER ';
+				$dml .= '(Username,PIN,FirstName,LastName,Address,City,';
+				$dml .= 'State,ZIP,CardType,CardNumber,CardExpDate) VALUES ';
+
+				// serialize the data
+				function wrap_apos(string $some_string): string {
+					return "'" . $some_string . "'";
+				}
+				$row_data = array_map(function($x) { return "'" . $x . "'"; },
+															array_values($new_fields));
+				$dml .= '(' . implode(',' , $row_data ) . ');';
+				db\crud_db($dml);
+				raise_alert('Successfully registered ' . $uname);
+			}
 		}
 	}
 
