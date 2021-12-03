@@ -189,7 +189,7 @@
 		$price = $sql_result[0]['Price'];
 		
 		// TODO use cart id key from customer table
-		$ret = db\crud_db("INSERT INTO \"BOOK-SHOPPING_CART\" VALUES(123456, $isbn, 1, $price);");
+		$ret = db\crud_db("INSERT INTO \"BOOK-SHOPPING_CART\" VALUES(000001, $isbn, 1, $price);");
 		if ( $ret ) {
 			// database sent an error
 			raise_alert('That book is already in your cart. Happy shopping! :)');
