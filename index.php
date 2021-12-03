@@ -1,4 +1,19 @@
 <!-- Figure 1: Welcome Screen by Alexander -->
+<?php
+require_once __DIR__ . '/src/db.php';
+
+//deleting cart on start menu
+$deleteCart = db\crud_db("DELETE FROM SHOPPING_CART WHERE CartID = '000001';");
+if ( $deleteCart ) {
+	// database sent an error
+	raise_alert('This cart cannot be deleted!');
+}
+
+//deleting cart-book on start menu
+$deleteBookCart = db\crud_db("DELETE FROM \"BOOK-SHOPPING_CART\" WHERE CartID = '000001';");
+
+?>
+
 <title>Welcome to Best Book Buy Online Bookstore!</title>
 <body>
 	<table align="center" style="border:1px solid blue;">
