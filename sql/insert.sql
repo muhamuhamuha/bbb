@@ -1,9 +1,9 @@
 -- customer table
-INSERT INTO CUSTOMER VALUES ('JD123','12345','John','Doe','456 washtenaw ave','Ann Arbor','Michigan','48198','VISA',5555555555555555,'2021-04-09',111111);
+INSERT INTO CUSTOMER VALUES ('JD123','12345','John','Doe','456 washtenaw ave','Ann Arbor','Michigan','48198','VISA','5555555555555555','0122');
 
-INSERT INTO CUSTOMER VALUES ('BM734','54321','Brie','Macbeth','981 packard st','Ann Arbor','Michigan','48012','MASTER',4444444444444444,'2021-03-03',222222);  
+INSERT INTO CUSTOMER VALUES ('BM734','54321','Brie','Macbeth','981 packard st','Ann Arbor','Michigan','48012','MASTER','4444444444444444','1203');  
 
-INSERT INTO CUSTOMER VALUES ('MJ463','71231','Miranda','Johnson','612 Orchard Rd','Ypsilanti','Michigan','48365','VISA',3333333333333333,'2023-04-09',333333);  
+INSERT INTO CUSTOMER VALUES ('MJ463','71231','Miranda','Johnson','612 Orchard Rd','Ypsilanti','Michigan','48365','VISA','0333333333333333','1133');
 
 -- book table
 INSERT INTO BOOK VALUES (5555555333444, 'Anna Karenina', 'Leo Tolstoy', 'The Russian Messenger', 20.00, 'World Literature', 0);
@@ -38,3 +38,5 @@ INSERT INTO REVIEW ("Description", ISBN) VALUES ('da best',9876543210123);
 INSERT INTO REVIEW ("Description", ISBN) VALUES ('oh my god when is the sequel coming out i cannot wait',9876543210123);
 
 INSERT INTO REVIEW ("Description", ISBN) VALUES ('the best of the best',1234567891234);
+
+INSERT INTO ADMINISTRATOR VALUES ('AD001','00001');
