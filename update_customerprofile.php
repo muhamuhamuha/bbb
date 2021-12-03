@@ -1,4 +1,3 @@
-<script>alert('Please enter all values')</script><!DOCTYPE HTML>
 <head>
 <title>UPDATE CUSTOMER PROFILE</title>
 
@@ -116,3 +115,65 @@
 	</form>
 </body>
 </html>
+<?php
+	require_once __DIR__ . '/src/app.php';
+	require_once __DIR__ . '/src/utils.php';
+
+	// some keys are different from registration... 🤦‍♂️
+	// TODO get username
+	// $uname = 
+	$good = true;
+	if (checkRequest() && assert_no_empty_fields($_POST)) {
+	
+		// filter out button at end
+		$fields = (array_slice($_POST, 0, -1));
+
+		// filter out retypenew_pin
+		$new_fields = Array();
+		foreach ($fields as $k => $v) {
+			if ( $k !== 'retypenew_pin' )  
+				// replaces slash in exp date for database
+				$new_fields[$k] = str_replace('/', '', $v);
+		}
+
+		// validate here instead of passing to the db and getting errors.
+		if (!preg_match('/\d{4}/', $new_fields['expiration_date'])) {
+			$good = false;
+				raise_alert('Invalid date format in card expiration field.');
+		}
+
+		if (!preg_match('/\d{16}/', $new_fields['card_number'])) {
+			$good = false;
+			raise_alert('Invalid card number given.');
+		}
+
+		if ($fields['retypenew_pin'] !== $new_fields['new_pin']) {
+			$good = false;
+			raise_alert('PIN numbers must match.');
+		}
+
+		if (strlen($fields['new_pin']) > 5) {
+			$good = false;
+			raise_alert('PIN can only by 5 characters long.');
+		}
+
+		if (strlen($fields['zip']) !== 5 || !preg_match('/\d{5}/', $fields['zip'])) {
+			$good = false;
+			raise_alert('Zip code must be 5 digits.');
+		}
+
+		if ($good) {
+			$dml = 'INSERT INTO CUSTOMER ';
+			$dml .= '(Username,PIN,FirstName,LastName,Address,City,';
+			$dml .= 'State,ZIP,CardType,CardNumber,CardExpDate) VALUES ';
+
+			// wrap each item in an apostrophe
+			$row_data = array_map(function($x) { return "'" . $x . "'"; },
+														array_values($new_fields));
+			// TODO add username here
+			$dml .= '(' . implode(',' , $row_data ) . ');';
+			// db\crud_db($dml);
+			raise_alert('Successfully updated information ' . $uname);
+		}
+	}
+?>
