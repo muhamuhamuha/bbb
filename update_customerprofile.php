@@ -1,3 +1,7 @@
+<?php
+session_start();
+$uname = $_SESSION['username'];
+?>
 <head>
 <title>UPDATE CUSTOMER PROFILE</title>
 
@@ -7,7 +11,7 @@
 	<table align="center" style="border:2px solid blue;">
 		<tr>
 			<td align="right">
-				Username: 
+				Username: <?php echo str_replace("'", "", $uname); ?>
 			</td>
 			<td colspan="3" align="center">
 							</td>
@@ -118,12 +122,13 @@
 <?php
 	require_once __DIR__ . '/src/app.php';
 	require_once __DIR__ . '/src/utils.php';
+	require_once __DIR__ . '/src/db.php';
 
 	// some keys are different from registration... 🤦‍♂️
 	// TODO get username
 	// $uname = 
 	$good = true;
-	if (checkRequest() && assert_no_empty_fields($_POST)) {
+	if (checkRequest(isset($_POST['new_pin'])) && assert_no_empty_fields($_POST)) {
 	
 		// filter out button at end
 		$fields = (array_slice($_POST, 0, -1));
@@ -163,17 +168,31 @@
 		}
 
 		if ($good) {
-			$dml = 'INSERT INTO CUSTOMER ';
-			$dml .= '(Username,PIN,FirstName,LastName,Address,City,';
-			$dml .= 'State,ZIP,CardType,CardNumber,CardExpDate) VALUES ';
 
 			// wrap each item in an apostrophe
 			$row_data = array_map(function($x) { return "'" . $x . "'"; },
 														array_values($new_fields));
-			// TODO add username here
-			$dml .= '(' . implode(',' , $row_data ) . ');';
-			// db\crud_db($dml);
+
+			// unpack
+			[$pin,
+			 $fname,
+			 $lname,
+			 $address,
+			 $city,
+			 $state,
+			 $zip,
+			 $ctype,
+			 $cnum,
+			 $cexp] = $row_data;
+
+			
+			$dml = "UPDATE CUSTOMER SET PIN = $pin, FirstName = $fname, LastName = $lname,";
+			$dml .= "Address = $address, City = $city, State = $state, ZIP = $zip,";
+			$dml .= "CardType = $ctype, CardNumber = $cnum, CardExpDate = $cexp ";
+			$dml .= "WHERE Username = $uname;";
+			db\crud_db($dml);
 			raise_alert('Successfully updated information ' . $uname);
+			header('Refresh: 0; url=confirm_order.php');
 		}
 	}
 ?>
