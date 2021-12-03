@@ -1,16 +1,24 @@
 <!-- Figure 1: Welcome Screen by Alexander -->
 <?php
+session_start();
 require_once __DIR__ . '/src/db.php';
 
 //deleting cart on start menu
-$deleteCart = db\crud_db("DELETE FROM SHOPPING_CART WHERE CartID = '000001';");
+$deleteCart = db\crud_db("DELETE FROM SHOPPING_CART WHERE CartID = 1;");
 if ( $deleteCart ) {
 	// database sent an error
 	raise_alert('This cart cannot be deleted!');
 }
 
-//deleting cart-book on start menu
-$deleteBookCart = db\crud_db("DELETE FROM \"BOOK-SHOPPING_CART\" WHERE CartID = '000001';");
+// before deleting we have to update the inventory in the book table
+$inv_isbn = db\select_from_db('SELECT ISBN, Quantity FROM "BOOK-SHOPPING_CART";');
+foreach ($inv_isbn as $result_arr) {
+	[$isbn, $quan] = array_values($result_arr);
+	db\crud_db("UPDATE BOOK SET Inventory = Inventory + $quan WHERE ISBN = $isbn;");
+}
+
+// deleting cart-book on start menu
+$deleteBookCart = db\crud_db("DELETE FROM \"BOOK-SHOPPING_CART\" WHERE CartID = 123456;");
 
 ?>
 
