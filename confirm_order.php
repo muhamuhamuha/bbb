@@ -3,6 +3,7 @@
 
 	require_once __DIR__ . '/src/utils.php';
 	require_once __DIR__ . '/src/db.php';
+	require_once __DIR__ . '/src/app.php';
 
 	// redirect user to register
 	if (!isset($_SESSION['username'])) {
@@ -10,12 +11,13 @@
 	}
 	$uname = $_SESSION['username'];  // comes wrapped in single quotes for queries
 
-	$sql = 'SELECT Address, City, State, Zip, CardType, CardNumber, CardExpDate ';
+	$sql = 'SELECT Address, City, State, Zip, CardType, CardNumber, CardExpDate, ';
+	$sql .= 'FirstName, LastName ';
 	$sql .= "FROM CUSTOMER WHERE Username = $uname";
 
 	$sql_result = db\select_from_db($sql)[0];
 	// unpack into variables
-	[$address, $city, $state, $zip, $ctype, $cnum, $cexp] = array_values($sql_result);
+	[$address, $city, $state, $zip, $ctype, $cnum, $cexp, $fname, $lname] = array_values($sql_result);
 	// reformat expiration date
 	$cexp = $cexp[0] . $cexp[1] . '/' . $cexp[2] . $cexp[3];
 
@@ -36,7 +38,7 @@
 	<tr>
 		<td>Shipping Address:</td>
 	</tr>
-	<td colspan="2"><?php echo str_replace("'", "", $uname); ?></td>
+	<td colspan="2"><?php echo "$fname $lname"; ?></td>
 	<td rowspan="3" colspan="2">
 		<input type="radio" name="cardgroup" value="profile_card" checked>
 		<?php echo "Use Credit Card on File:<br>$ctype - $cnum - $cexp<br>"; ?>
@@ -88,7 +90,14 @@
 	</td>
 	<td align="right">
 	<div id="bookdetails" style="overflow:scroll;height:180px;width:260px;border:1px solid black;">
-		SubTotal:$12.99</br>Shipping_Handling:$2</br>_______</br>Total:$14.99	</div>
+		<?php
+			$subtot = calcSubtotal($books);
+			$ship = calcShipping($books);
+			$tot = $subtot + $ship;
+			echo "Subtotal: $ $subtot";
+			echo "<br>Shipping & Handling: $ $ship";
+			echo "<br>Total: $ $tot";
+		?>
 	</td>
 	</tr>
 	<tr>
