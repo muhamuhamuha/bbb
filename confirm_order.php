@@ -2,14 +2,27 @@
 	session_start();
 
 	require_once __DIR__ . '/src/utils.php';
+	require_once __DIR__ . '/src/db.php';
 
 	// redirect user to register
 	if (!isset($_SESSION['username'])) {
 		header('Refresh:0; url=customer_registration.php');
 	}
-	$uname = $_SESSION['username'];
-	console_log($uname);
+	$uname = $_SESSION['username'];  // comes wrapped in single quotes for queries
 
+	$sql = 'SELECT Address, City, State, Zip, CardType, CardNumber, CardExpDate ';
+	$sql .= "FROM CUSTOMER WHERE Username = $uname";
+
+	$sql_result = db\select_from_db($sql)[0];
+	// unpack into variables
+	[$address, $city, $state, $zip, $ctype, $cnum, $cexp] = array_values($sql_result);
+	// reformat expiration date
+	$cexp = $cexp[0] . $cexp[1] . '/' . $cexp[2] . $cexp[3];
+
+	// get books in cart
+	$sql = 'SELECT Title, Author, Price, Quantity ';
+	$sql .= 'FROM "BOOK-SHOPPING_CART" NATURAL JOIN BOOK;';
+	$books = db\select_from_db($sql);
 
 ?>
 <!DOCTYPE HTML>
@@ -21,14 +34,13 @@
 	<table align="center" style="border:2px solid blue;">
 	<form id="buy" action="proof_purchase.php" method="post">
 	<tr>
-	<td>
-	Shipping Address:
-	</td>
+		<td>Shipping Address:</td>
 	</tr>
-	<td colspan="2">
-		test test	</td>
+	<td colspan="2"><?php echo str_replace("'", "", $uname); ?></td>
 	<td rowspan="3" colspan="2">
-		<input type="radio" name="cardgroup" value="profile_card" checked>Use Credit card on file<br />MASTER - 1234567812345678 - 12/2015<br />
+		<input type="radio" name="cardgroup" value="profile_card" checked>
+		<?php echo "Use Credit Card on File:<br>$ctype - $cnum - $cexp<br>"; ?>
+
 		<input type="radio" name="cardgroup" value="new_card">New Credit Card<br />
 				<select id="credit_card" name="credit_card">
 					<option selected disabled>select a card type</option>
@@ -40,23 +52,31 @@
 				<br />Exp date<input type="text" id="card_expiration" name="card_expiration" placeholder="mm/yyyy">
 	</td>
 	<tr>
-	<td colspan="2">
-		test	</td>		
+		<td colspan="2"><?php echo $address; ?></td>		
 	</tr>
 	<tr>
-	<td colspan="2">
-		test	</td>
+		<td colspan="2"><?php echo $city ?></td>
 	</tr>
 	<tr>
-	<td colspan="2">
-		Tennessee, 12345	</td>
+		<td colspan="2"><?php echo $state . ', ' . $zip ?></td>
 	</tr>
 	<tr>
 	<td colspan="3" align="center">
 	<div id="bookdetails" style="overflow:scroll;height:180px;width:520px;border:1px solid black;">
 	<table border='1'>
 		<th>Book Description</th><th>Qty</th><th>Price</th>
-		<tr><td>iuhdf</br><b>By</b> Avi Silberschatz</br><b>Publisher:</b> McGraw-Hill</td><td>1</td><td>$12.99</td></tr>	</table>
+		<?php
+			foreach ($books as $dex => $book) {
+				[$title, $author, $price, $quantity] = array_values($book);
+				echo "<tr>";
+				echo "<td>$title<br><b>By:</b> $author</td>";
+				echo "<td>$quantity</td>";
+				echo "<td>$price</td>";
+				echo "</tr>";
+			}
+		?>
+		</tr>
+	</table>
 	</div>
 	</td>
 	</tr>
