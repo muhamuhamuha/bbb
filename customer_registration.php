@@ -119,16 +119,7 @@
 <?php
 	require_once __DIR__ . '/src/db.php';
 	require_once __DIR__ . '/src/utils.php';
-
-	function assert_no_empty_fields(array $keys): bool {
-		foreach($keys as $k => $v) {
-			if ( empty($v) ) {
-				raise_alert("$k cannot be empty.");
-				return false;
-			}
-		}
-		return true;
-	}
+	require_once __DIR__ . '/src/app.php';
 
 	if (checkRequest()) {  // form has been submitted
 		$sql = 'SELECT Username FROM CUSTOMER;';
@@ -156,8 +147,6 @@
 					// replaces slash in exp date for database
 					$new_fields[$k] = str_replace('/', '', $v);
 			}
-
-		
 
 			// validate here instead of passing to the db and getting errors.
 			if (!preg_match('/\d{4}/', $new_fields['expiration'])) {
@@ -190,10 +179,7 @@
 				$dml .= '(Username,PIN,FirstName,LastName,Address,City,';
 				$dml .= 'State,ZIP,CardType,CardNumber,CardExpDate) VALUES ';
 
-				// serialize the data
-				function wrap_apos(string $some_string): string {
-					return "'" . $some_string . "'";
-				}
+				// wrap each item in an apostrophe
 				$row_data = array_map(function($x) { return "'" . $x . "'"; },
 															array_values($new_fields));
 				$dml .= '(' . implode(',' , $row_data ) . ');';
