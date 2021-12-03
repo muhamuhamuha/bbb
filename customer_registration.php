@@ -1,4 +1,5 @@
 <!-- UI: Prithviraj Narahari, php code: Alexander Martens -->
+<?php session_start(); ?>
 <head>
 <title> CUSTOMER REGISTRATION </title>
 </head>
@@ -107,7 +108,7 @@
 				<input type="submit" id="register_submit" name="register_submit" value="Register">
 			</td>
 			</form>
-			<form id="no_registration" action="index.php" method="post">
+			<form id="no_registration" action="screen2.php" method="post">
 			<td colspan="2" align="center">
 				<input type="submit" id="donotregister" name="donotregister" value="Don't Register">
 			</td>
@@ -115,6 +116,14 @@
 		</tr>
 	</table>
 </body>
+<script>
+	// pop alert if the user refused to register
+	const refuseBtn = document.querySelector('input[id="donotregister"]');
+
+	$msg = 'In order to proceed with the payment, you need to register first.'
+	refuseBtn.addEventListener('click', () => alert($msg));
+
+</script>
 </HTML>
 <?php
 	require_once __DIR__ . '/src/db.php';
@@ -185,6 +194,9 @@
 				$dml .= '(' . implode(',' , $row_data ) . ');';
 				db\crud_db($dml);
 				raise_alert('Successfully registered ' . $uname);
+				// save user
+				$_SESSION['username'] = $uname;
+				header('Refresh: 0; url=confirm_order.php;');
 			}
 		}
 	}
