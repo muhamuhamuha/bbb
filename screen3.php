@@ -109,7 +109,10 @@
 							$sql1 = 'SELECT SUM(Quantity) FROM "BOOK-SHOPPING_CART";';
 							$sql1_result = db\select_from_db($sql1);
 							[$num_items] = array_values($sql1_result[0]);
-							echo "<fieldset>Your Shopping Cart Has $num_items Items</fieldset>";
+							echo "<fieldset>Your Shopping Cart Has ";
+							echo isset($num_items) ? $num_items : 0;
+							echo " Items</fieldset>";
+
 						} else {
 							echo "<fieldset>Your Shopping Cart Has 0 Items</fieldset>";
 						}
@@ -193,15 +196,14 @@
 		$sql_result = db\select_from_db($sql);
 		$price = $sql_result[0]['Price'];
 		
-		// TODO use cart id key from customer table
-		$ret = db\crud_db("INSERT INTO \"BOOK-SHOPPING_CART\" VALUES(000001, $isbn, 1, $price);");
+		$ret = db\crud_db("INSERT INTO \"BOOK-SHOPPING_CART\" VALUES(123456, $isbn, 1, $price);");
+		// TODO make sure that 
 		if ( $ret ) {
 			// database sent an error
 			raise_alert('That book is already in your cart. Happy shopping! :)');
 		} else {
 			// use title instead of isbn in alert message
 			raise_alert("ISBN: $isbn added successfully to the cart!");
-			header('Refresh: 0; url=screen2.php');
 		}
 	}
 
