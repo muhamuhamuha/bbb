@@ -1,3 +1,25 @@
+<?php
+require_once __DIR__ . '/src/db.php';
+
+if (isset($_POST['login'])){
+	$adminName = $_POST['adminname'];
+	$adminPIN = $_POST['pin'];
+	
+	$q1 = db\select_from_db("SELECT Username FROM ADMINISTRATOR WHERE Username = 'AD001';");
+	$q2 = db\select_from_db("SELECT PIN FROM ADMINISTRATOR WHERE Username = 'AD001';");
+
+	$adminNameQery = $q1[0]['Username'];
+	$adminPINQuery = $q2[0]['PIN'];
+	
+	if ($adminNameQery == $adminName && $adminPINQuery == $adminPIN) {
+		raise_alert('Welcome Administrator!');
+		header('Refresh: 0; url=admin_tasks.php');
+	} else {
+		raise_alert("Invalid Adminname or PIN!");
+	}
+}
+
+?>
 
 <!DOCTYPE HTML>
 <head>
@@ -6,7 +28,7 @@
 
 <body>
 <table align="center" style="border:2px solid blue;">
-		<form action="admin_tasks.php" method="post" id="adminlogin_screen">
+		<form action="" method="post" id="adminlogin_screen">
 		<tr>
 			<td align="right">
 				Adminname<span style="color:red">*</span>:
