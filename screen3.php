@@ -1,6 +1,9 @@
 <!-- Figure 3: Search Result Screen by Prithviraj Narahari, php coding: Alexander Martens -->
 <?php
+	session_start();
 	require_once __DIR__ . '/src/db.php';
+
+
 
 	// the html forwards the following listed parameters
 	// $searchon is an array, the rest are variables
@@ -100,7 +103,17 @@
 			<td align="left">
 
 				<h6>
-					<fieldset>Your Shopping Cart has 0 items</fieldset>
+					<?php
+						// get shopping cart data if the user is logged in.
+						if ( isset($_SESSION['username']) ) {
+							$sql1 = 'SELECT SUM(Quantity) FROM "BOOK-SHOPPING_CART";';
+							$sql1_result = db\select_from_db($sql1);
+							$num_items = $sql1_result[0];
+							echo "<fieldset>Your Shopping Cart Has $num_items Items</fieldset>";
+						} else {
+							echo "<fieldset>Your Shopping Cart Has 0 Items</fieldset>";
+						}
+					?>
 				</h6>
 
 			</td>
@@ -165,14 +178,6 @@
 		alert(`Given ${numItems} items: ${searchfor} but ${searchon.length} "Search In" option(s).`);
 		window.history.back();
 	}
-
-	// const cartButtons = document.querySelectorAll('button[name="btnCart"]');
-
-	// for (let i = 0; i < cartButtons.length; i += 1) {
-	// 	button = cartButtons[i];
-	// 	button.addEventListener('click', function() { button.disabled = true; });
-	// }
-	// cartButtons.map(button => button.addEventListener('click', (e) => e.target.disabled = true));
 </script>
 
 <?php
