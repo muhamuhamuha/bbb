@@ -3,7 +3,6 @@
 
 	require_once __DIR__ . '/src/utils.php';
 	require_once __DIR__ . '/src/db.php';
-	require_once __DIR__ . '/src/app.php';
 
 	// redirect user to register
 	if (!isset($_SESSION['username'])) {
@@ -11,13 +10,12 @@
 	}
 	$uname = $_SESSION['username'];  // comes wrapped in single quotes for queries
 
-	$sql = 'SELECT Address, City, State, Zip, CardType, CardNumber, CardExpDate, ';
-	$sql .= 'FirstName, LastName ';
+	$sql = 'SELECT FirstName, LastName, Address, City, State, Zip, CardType, CardNumber, CardExpDate ';
 	$sql .= "FROM CUSTOMER WHERE Username = $uname";
 
 	$sql_result = db\select_from_db($sql)[0];
 	// unpack into variables
-	[$address, $city, $state, $zip, $ctype, $cnum, $cexp, $fname, $lname] = array_values($sql_result);
+	[$fname, $lname, $address, $city, $state, $zip, $ctype, $cnum, $cexp] = array_values($sql_result);
 	// reformat expiration date
 	$cexp = $cexp[0] . $cexp[1] . '/' . $cexp[2] . $cexp[3];
 
@@ -25,6 +23,17 @@
 	$sql = 'SELECT Title, Author, Price, Quantity ';
 	$sql .= 'FROM "BOOK-SHOPPING_CART" NATURAL JOIN BOOK;';
 	$books = db\select_from_db($sql);
+
+	//get totals
+	$numBooksInCart = 0;
+	$cartSbTotal = 0;
+	foreach ($books as $dex => $book) {
+		[$title, $author, $price, $quantity] = array_values($book);
+		$numBooksInCart+= $quantity;
+		$cartSbTotal+= ($price * $quantity);
+	}
+	$shippingHandling = $numBooksInCart * 2;
+	$total = $cartSbTotal + $shippingHandling;
 
 ?>
 <!DOCTYPE HTML>
@@ -38,7 +47,10 @@
 	<tr>
 		<td>Shipping Address:</td>
 	</tr>
-	<td colspan="2"><?php echo "$fname $lname"; ?></td>
+	<td colspan="2"><?php echo str_replace("'", "", $fname);
+	echo " ";
+	echo str_replace("'", "", $lname);
+	?></td>
 	<td rowspan="3" colspan="2">
 		<input type="radio" name="cardgroup" value="profile_card" checked>
 		<?php echo "Use Credit Card on File:<br>$ctype - $cnum - $cexp<br>"; ?>
@@ -90,14 +102,7 @@
 	</td>
 	<td align="right">
 	<div id="bookdetails" style="overflow:scroll;height:180px;width:260px;border:1px solid black;">
-		<?php
-			$subtot = calcSubtotal($books);
-			$ship = calcShipping($books);
-			$tot = $subtot + $ship;
-			echo "Subtotal: $ $subtot";
-			echo "<br>Shipping & Handling: $ $ship";
-			echo "<br>Total: $ $tot";
-		?>
+		SubTotal:<?php echo " $$cartSbTotal"?></br>Shipping_Handling:<?php echo " $$shippingHandling"?></br>_______</br>Total:<?php echo " $$total"?></div>
 	</td>
 	</tr>
 	<tr>
