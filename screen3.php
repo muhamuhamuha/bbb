@@ -108,7 +108,7 @@
 						if ( isset($_SESSION['username']) ) {
 							$sql1 = 'SELECT SUM(Quantity) FROM "BOOK-SHOPPING_CART";';
 							$sql1_result = db\select_from_db($sql1);
-							$num_items = $sql1_result[0];
+							[$num_items] = array_values($sql1_result[0]);
 							echo "<fieldset>Your Shopping Cart Has $num_items Items</fieldset>";
 						} else {
 							echo "<fieldset>Your Shopping Cart Has 0 Items</fieldset>";
