@@ -1,4 +1,17 @@
+<?php
+	session_start();
 
+	require_once __DIR__ . '/src/utils.php';
+
+	// redirect user to register
+	if (!isset($_SESSION['username'])) {
+		header('Refresh:0; url=customer_registration.php');
+	}
+	$uname = $_SESSION['username'];
+	console_log($uname);
+
+
+?>
 <!DOCTYPE HTML>
 <head>
 	<title>CONFIRM ORDER</title>
