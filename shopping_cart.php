@@ -1,23 +1,12 @@
 <?php
 	session_start();
 	require_once __DIR__ . '/src/db.php';
+	require_once __DIR__ . '/src/app.php';
 
 	$sql = 'SELECT Title, Author, Publisher, ISBN, Quantity, Price ';
 	$sql .= 'FROM "BOOK-SHOPPING_CART" NATURAL JOIN BOOK;';
 	$books = db\select_from_db($sql);
 	
-
-	/** used at the end to calculate subtotals */
-	function calcSubtotal(array $books): float {
-		// filter out prices
-		$prices = array_map(function($x) { return floatval(end($x)); }, $books);
-		$quantities = array_map(function($x) { return intval($x['Quantity']); }, $books);
-		for ($i = 0; $i < count($prices); $i++) {
-			$prices[$i] = $quantities[$i] * $prices[$i];
-		}
-		return array_sum($prices);
-	}
-
 	/** spits out data structured into html table syntax that this UI expects... */
 	function outputHTML(string $title,
 											string $author,
