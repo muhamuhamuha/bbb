@@ -33,7 +33,9 @@ function crud_db(string $ddl, string $db_path = null, bool $enableWarn = false) 
 
     $result = $db->exec($ddl);
     if (!$result) {
-        return $db->lastErrorMsg();
+        $err = $db->lastErrorMsg();
+        console_log($err);
+        return $err;
     } else {
         console_log('records updated sucessfully @ ' . date('y-m-d h:i:s', time()));
     }
