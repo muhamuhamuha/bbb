@@ -4,7 +4,7 @@
 	require_once __DIR__ . '/src/db.php';
 
 	//create a shopping cart
-	$insertCart = db\crud_db("INSERT INTO SHOPPING_CART VALUES (000001,0,0,CURRENT_TIMESTAMP);");
+	$insertCart = db\crud_db("INSERT INTO SHOPPING_CART VALUES (0,0,CURRENT_TIMESTAMP);");
 
 	// read unique categories from sql
 	$sql = 'SELECT DISTINCT Category FROM BOOK;';
