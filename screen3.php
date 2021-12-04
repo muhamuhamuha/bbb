@@ -3,6 +3,8 @@
 	session_start();
 	require_once __DIR__ . '/src/db.php';
 
+
+
 	// the html forwards the following listed parameters
 	// $searchon is an array, the rest are variables
 	// $category is a string
@@ -195,7 +197,7 @@
 		$price = $sql_result[0]['Price'];
 		
 		$ret = db\crud_db("INSERT INTO \"BOOK-SHOPPING_CART\" VALUES(123456, $isbn, 1, $price);");
-		// will not redirect because of javascript that was given.
+		// will not redirect because of javascript that was given
 		if ( $ret ) {
 			// database sent an error
 			raise_alert('That book is already in your cart. Happy shopping! :)');
