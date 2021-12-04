@@ -3,7 +3,6 @@
 session_start();
 require_once __DIR__ . '/src/db.php';
 
-//deleting cart on start menu
 $deleteCart = db\crud_db("DELETE FROM SHOPPING_CART WHERE TotalPrice = 0;");
 if ( $deleteCart ) {
 	// database sent an error
