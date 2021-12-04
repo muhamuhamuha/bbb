@@ -3,17 +3,11 @@
 session_start();
 require_once __DIR__ . '/src/db.php';
 
+// delete total price = 0 
 $deleteCart = db\crud_db("DELETE FROM SHOPPING_CART WHERE TotalPrice = 0;");
 if ( $deleteCart ) {
 	// database sent an error
 	raise_alert('This cart cannot be deleted!');
-}
-
-// before deleting we have to update the inventory in the book table
-$inv_isbn = db\select_from_db('SELECT ISBN, Quantity FROM "BOOK-SHOPPING_CART";');
-foreach ($inv_isbn as $result_arr) {
-	[$isbn, $quan] = array_values($result_arr);
-	db\crud_db("UPDATE BOOK SET Inventory = Inventory + $quan WHERE ISBN = $isbn;");
 }
 
 // deleting cart-book on start menu

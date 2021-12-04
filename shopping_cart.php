@@ -134,15 +134,13 @@
 		// hit database twice, once to get quantity, and then again to delete...
 		$sql = 'SELECT Quantity FROM "BOOK-SHOPPING_CART" WHERE ISBN=' . $isbn . ';';
 		$sql_result = db\select_from_db($sql);
-		$quantity = array_map(function ($x) { return $x['Quantity']; }, $sql_result)[0];
+		if (!empty($sql_result)) {
+		  $quantity = array_map(function ($x) { return $x['Quantity']; }, $sql_result)[0];
+		}
 
 		// delete item from shopping cart
 		db\crud_db(str_replace('SELECT Quantity', 'DELETE', $sql));
 
-		// hit database again and update BOOK
-		$sql = 'UPDATE BOOK SET Inventory = Inventory + ' . $quantity;
-		$sql .= " WHERE ISBN = $isbn;";
-		db\crud_db($sql);
 	} elseif ( checkRequest(array_key_exists('recalculate_payment', $_POST)) ){
 
 		foreach ($_POST as $txtIsbn => $quantity) {

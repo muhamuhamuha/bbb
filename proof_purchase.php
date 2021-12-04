@@ -25,8 +25,11 @@ $numBooksInCart = 0;
 $cartSbTotal = 0;
 foreach ($books as $dex => $book) {
 	[$isbn, $title, $author, $price, $quantity] = array_values($book);
+	$quantity = intval($quantity);
+	$price = floatval($price);
 	$numBooksInCart+= $quantity;
 	$cartSbTotal+= ($price * $quantity);
+	// echo "UPDATE BOOK SET Inventory = Inventory - $quantity WHERE ISBN = $isbn;";
 	$updateQuantity = db\crud_db("UPDATE BOOK SET Inventory = Inventory - $quantity WHERE ISBN = $isbn;");
 }
 $shippingHandling = $numBooksInCart * 2;
@@ -88,7 +91,7 @@ if (isset($_POST['update_customerprofile'])){
 		<th>Book Description</th><th>Qty</th><th>Price</th>
 		<?php
 			foreach ($books as $dex => $book) {
-				[$title, $author, $price, $quantity] = array_values($book);
+				[$isbn, $title, $author, $price, $quantity] = array_values($book);
 				echo "<tr>";
 				echo "<td>$title<br><b>By:</b> $author</td>";
 				echo "<td>$quantity</td>";
