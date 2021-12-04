@@ -6,6 +6,9 @@ $numCustomers = $query1[0]['Num'];
 
 $query2 = db\select_from_db("SELECT Category, count(ISBN) AS Numba FROM BOOK GROUP BY Category ORDER BY Numba DESC;");
 
+$query3 = db\select_from_db("SELECT strftime('%Y', \"DateTime\") as year, strftime('%m', \"DateTime\") AS month, avg(TotalPrice) AS aver FROM SHOPPING_CART GROUP BY year, month ORDER BY year DESC, month ASC limit 1;
+");
+
 $query4 = db\select_from_db("SELECT Title, count(ReviewID) AS NumReviews FROM BOOK NATURAL JOIN REVIEW GROUP BY Title;");
 
 ?>
@@ -41,6 +44,12 @@ $query4 = db\select_from_db("SELECT Title, count(ReviewID) AS NumReviews FROM BO
                         echo "\n", $row['Category'], "\t\t", $row['Numba'];
                     }
                     echo "</pre>";
+                    echo " Average monthly sales, in dollars, for the current year: ";
+                    foreach ( $query3 as $row2 ) {
+                        preg_match('/\d+\.\d\d/',$row2['aver'],$m);
+                        echo "<br>", $row2['year'], "\t\t", $row2['month'], "\t\t", $m[0];
+                    }
+                    echo "<br>";
                     echo "All book titles and the number of reviews for each book:\n";
                     echo "<pre>";
                     echo "Title\t\tReviews\n";
