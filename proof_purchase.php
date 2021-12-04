@@ -16,7 +16,7 @@ $sql_result = db\select_from_db($sql)[0];
 $cexp = $cexp[0] . $cexp[1] . '/' . $cexp[2] . $cexp[3];
 
 // get books in cart
-$sql = 'SELECT Title, Author, Price, Quantity ';
+$sql = 'SELECT ISBN, Title, Author, Price, Quantity ';
 $sql .= 'FROM "BOOK-SHOPPING_CART" NATURAL JOIN BOOK;';
 $books = db\select_from_db($sql);
 
@@ -24,12 +24,16 @@ $books = db\select_from_db($sql);
 $numBooksInCart = 0;
 $cartSbTotal = 0;
 foreach ($books as $dex => $book) {
-	[$title, $author, $price, $quantity] = array_values($book);
+	[$isbn, $title, $author, $price, $quantity] = array_values($book);
 	$numBooksInCart+= $quantity;
 	$cartSbTotal+= ($price * $quantity);
+	$updateQuantity = db\crud_db("UPDATE BOOK SET Inventory = Inventory - $quantity WHERE ISBN = $isbn;");
 }
 $shippingHandling = $numBooksInCart * 2;
 $total = $cartSbTotal + $shippingHandling;
+
+//add total to database for sales report
+$insertTotal = db\crud_db("UPDATE SHOPPING_CART SET TotalPrice = $total WHERE rowid = (SELECT max(rowid) FROM SHOPPING_CART);");
 
 //get date
 $dateQuery = db\select_from_db("SELECT DATE() AS dait;");
@@ -38,6 +42,11 @@ $date = $dateQuery[0]['dait'];
 //get time
 $timeQuery = db\select_from_db("SELECT TIME() AS tyme;");
 $time = $timeQuery[0]['tyme'];
+
+if (isset($_POST['update_customerprofile'])){
+	$deleteBookCart = db\crud_db("DELETE FROM \"BOOK-SHOPPING_CART\" WHERE CartID = 123456;");
+	header('Refresh: 0; url=screen2.php');
+}
 
 ?>
 
@@ -109,7 +118,7 @@ $time = $timeQuery[0]['tyme'];
 		</td>
 		</form>
 		<td align="right">
-			<form id="update" action="screen2.php" method="post">
+			<form id="update" action="" method="post">
 			<input type="submit" id="update_customerprofile" name="update_customerprofile" value="New Search">
 			</form>
 		</td>
